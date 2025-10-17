@@ -1,4 +1,8 @@
 import { useState } from "react";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+
 import { Textarea } from "./components/ui/textarea";
 import {
   Select,
@@ -23,6 +27,16 @@ function App() {
   // t2s - text to speech
   // s2t - speech to text
   const [mode, setMode] = useState<"t2s" | "s2t">("t2s");
+  const {
+    transcript,
+    // listening,
+    // resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  if (!browserSupportsSpeechRecognition) {
+    console.log("Browser does not support speech recognition.");
+  }
 
   return (
     <main className="mx-auto px-5 min-h-screen flex justify-center items-center">
@@ -62,9 +76,29 @@ function App() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Button>Convert</Button>
+          <Button
+            onClick={() => {
+              if (!browserSupportsSpeechRecognition) {
+                alert("Your browser does not support speech recognition.");
+                return;
+              }
+              alert("Speech recognition started.");
+              SpeechRecognition.startListening();
+            }}
+          >
+            Convert
+          </Button>
+
+          <button
+            onClick={() => {
+              SpeechRecognition.stopListening();
+            }}
+          >
+            Stop
+          </button>
         </div>
       </section>
+      <p>{transcript}</p>
     </main>
   );
 }
